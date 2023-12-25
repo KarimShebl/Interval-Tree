@@ -59,11 +59,11 @@ class IntervalTree {
 
 
     Interval *searchInterval(Interval *curr, int &l, int &r) {
-        if(curr->leftSubTree && curr->leftSubTree->maxRight >= l)
+        if (curr->leftSubTree && curr->leftSubTree->maxRight >= l)
             return searchInterval(curr->leftSubTree, l, r);
-        else if(curr->right >= l)
+        else if (curr->right >= l && curr->left <= r)
             return curr;
-        if(curr->rightSubTree)
+        if (curr->rightSubTree)
             return searchInterval(curr->rightSubTree, l, r);
         return nullptr;
     }
@@ -88,19 +88,75 @@ public:
     }
 };
 
-int main() {
-    IntervalTree intervalTree;
-    intervalTree.insert(5, 9);
-    intervalTree.insert(6, 18);
-    intervalTree.insert(4, 6);
-    intervalTree.insert(1, 6);
-    intervalTree.insert(2, 40);
-
-    Interval* interval = intervalTree.search(3, 9);
-
+void print(Interval* interval)
+{
     if(interval)
-        cout << interval->left << ' ' << interval->right << endl;
+        cout << "The Smallest Left Overlapping Interval : " << interval->left << ' ' << interval->right << endl;
     else
         cout << "NOT FOUND" << endl;
+}
+
+int main() {
+    IntervalTree intervalTree;
+    intervalTree.insert(2, 5);
+    print(intervalTree.search(2, 5));
+    intervalTree.insert(3, 7);
+    print(intervalTree.search(0, 1)); // NOT FOUND
+    intervalTree.insert(10, 20);
+    print(intervalTree.search(21, 26)); // NOT FOUND
+    intervalTree.insert(8, 12);
+    print(intervalTree.search(10, 15));
+    intervalTree.insert(25, 30);
+    print(intervalTree.search(22, 28));
+    intervalTree.insert(15, 22);
+    print(intervalTree.search(14, 21));
+    intervalTree.insert(17, 25);
+    print(intervalTree.search(18, 24));
+    intervalTree.insert(30, 35);
+    print(intervalTree.search(32, 34));
+    intervalTree.insert(40, 50);
+    print(intervalTree.search(51, 66)); // NOT FOUND
+    intervalTree.insert(38, 42);
+    print(intervalTree.search(41, 44));
+    intervalTree.insert(60, 70);
+    print(intervalTree.search(55, 65));
+    intervalTree.insert(55, 65);
+    print(intervalTree.search(58, 62));
+    intervalTree.insert(52, 58);
+    print(intervalTree.search(56, 59));
+    intervalTree.insert(80, 90);
+    print(intervalTree.search(75, 85));
+    intervalTree.insert(78, 82);
+    print(intervalTree.search(80, 83));
+    intervalTree.insert(92, 98);
+    print(intervalTree.search(88, 94));
+    intervalTree.insert(85, 95);
+    print(intervalTree.search(87, 92));
+    intervalTree.insert(100, 110);
+    print(intervalTree.search(105, 108));
+    intervalTree.insert(102, 112);
+    print(intervalTree.search(115, 116)); // NOT FOUND
+    intervalTree.insert(115, 120);
+    print(intervalTree.search(112, 118));
+    intervalTree.insert(122, 128);
+    print(intervalTree.search(118, 125));
+    intervalTree.insert(130, 140);
+    print(intervalTree.search(135, 138));
+    intervalTree.insert(125, 135);
+    print(intervalTree.search(132, 136));
+    intervalTree.insert(150, 160);
+    print(intervalTree.search(145, 155));
+    intervalTree.insert(145, 155);
+    print( intervalTree.search(150, 154));
+    intervalTree.insert(142, 148);
+    print(intervalTree.search(146, 149));
+    intervalTree.insert(165, 175);
+    print(intervalTree.search(160, 170));
+    intervalTree.insert(162, 172);
+    print(intervalTree.search(168, 174));
+    intervalTree.insert(180, 190);
+    print(intervalTree.search(175, 185));
+    intervalTree.insert(176, 182);
+    print(intervalTree.search(178, 184));
     return 0;
 }
