@@ -1,7 +1,19 @@
+//Author: Karim Shebl
+//Date: 25/12/2023
 #include <iostream>
 
 using namespace std;
 
+/* Interval represents the tree node which contains:
+ *   3 Integers:
+ *      1-left: the beginning point of the interval
+ *      2-right: the end point of the interval
+ *      3-maxRight: the maximum end point in the subtree
+ *   3 Pointers:
+ *      1-leftSubTree: pointing on the left subtree
+ *      2-rightSubTree: pointing on the right subtree
+ *      3-parent: pointing to the node's parent (makes easier to update maxRight after insertion)
+ * */
 struct Interval {
     int left, right, maxRight;
     Interval *leftSubTree, *rightSubTree, *parent;
@@ -14,8 +26,17 @@ struct Interval {
 };
 
 class IntervalTree {
-    Interval *root{};
+    Interval *root{}; // the root of the interval tree
 
+    /* linkTwoIntervals: it links two tree nodes by a consistent way
+     * it takes:
+     *      parent: which is the first node representing the parent node
+     *      child: which is the second node representing the child node
+     *      dirIndicator: to indicate the way it should link they both:
+     *                    0 => link the child with the left pointer
+     *                    1 => link the child with the right pointer
+     * at the end it links the parent pointer in the child with the parent node to be consistent
+     * */
     void linkTwoIntervals(Interval *parent, int dirIndicator, Interval *child) {
         if (dirIndicator)
             parent->rightSubTree = child;
@@ -24,6 +45,12 @@ class IntervalTree {
         child->parent = parent;
     }
 
+
+    /* insertInterval:
+     * a recursive function which does the following:
+     *      1- search for the correct position depending on BST with the left of the interval (in case of tie it works for the right)
+     *      2- after that it insert the new node (interval) with linkTwoIntervals function consistently
+     * */
     void insertInterval(Interval *curr, Interval *target) {
         if (target->left < curr->left) {
             if (curr->leftSubTree)
@@ -50,6 +77,11 @@ class IntervalTree {
         }
     }
 
+    /* reCalculateMax:
+     * a recursive function which does the following:
+     *      1- it takes a start node and goes up and up till it reaches the root then stop
+     *      2- in each step it checks if the new end point of the inserted node bigger than the current node it updates it (to keep the tree updated according to maxRight of each node)
+     * */
     void reCalculateMax(Interval *curr, const int &insertedRight) {
         if (insertedRight > curr->maxRight)
             curr->maxRight = insertedRight;
@@ -57,7 +89,9 @@ class IntervalTree {
             reCalculateMax(curr->parent, insertedRight);
     }
 
-
+    /* searchInterval:
+     * a recursive function which returns the overlapping interval with the smallest beginning point (left) if there is no overlapping returns null
+     * */
     Interval *searchInterval(Interval *curr, int &l, int &r) {
         if (curr->leftSubTree && curr->leftSubTree->maxRight >= l)
             return searchInterval(curr->leftSubTree, l, r);
@@ -71,9 +105,9 @@ class IntervalTree {
 
 public:
     void insert(int l, int r) {
-        Interval *newInterval = new Interval({l, r, r});
+        Interval *newInterval = new Interval({l, r, r}); // create an interval satisfying user wants (l, r)
         if (!root)
-            root = newInterval;
+            root = newInterval; // if the tree is empty link the root with the new interval, so it becomes our root
         else
             insertInterval(root, newInterval);
         reCalculateMax(newInterval, newInterval->right);
@@ -81,16 +115,18 @@ public:
 
     Interval *search(int l, int r) {
         if (!root)
-            return nullptr;
+            return nullptr; // if the ree is empty return null
         else {
             return searchInterval(root, l, r);
         }
     }
 };
 
-void print(Interval* interval)
-{
-    if(interval)
+
+/* print takes an interval:
+ * it prints the beginning point (left) and end point (right) of the interval, if the interval is null it prints "NOT FOUND" */
+void print(Interval *interval) {
+    if (interval)
         cout << "The Smallest Left Overlapping Interval : " << interval->left << ' ' << interval->right << endl;
     else
         cout << "NOT FOUND" << endl;
@@ -147,7 +183,7 @@ int main() {
     intervalTree.insert(150, 160);
     print(intervalTree.search(145, 155));
     intervalTree.insert(145, 155);
-    print( intervalTree.search(150, 154));
+    print(intervalTree.search(150, 154));
     intervalTree.insert(142, 148);
     print(intervalTree.search(146, 149));
     intervalTree.insert(165, 175);
