@@ -17,7 +17,7 @@ class IntervalTree {
     Interval *root{};
 
     void linkTwoIntervals(Interval *parent, int dirIndicator, Interval *child) {
-        if(dirIndicator)
+        if (dirIndicator)
             parent->rightSubTree = child;
         else
             parent->leftSubTree = child;
@@ -57,6 +57,18 @@ class IntervalTree {
             reCalculateMax(curr->parent, insertedRight);
     }
 
+
+    Interval *searchInterval(Interval *curr, int &l, int &r) {
+        if(curr->leftSubTree && curr->leftSubTree->maxRight >= l)
+            return searchInterval(curr->leftSubTree, l, r);
+        else if(curr->right >= l)
+            return curr;
+        if(curr->rightSubTree)
+            return searchInterval(curr->rightSubTree, l, r);
+        return nullptr;
+    }
+
+
 public:
     void insert(int l, int r) {
         Interval *newInterval = new Interval({l, r, r});
@@ -65,6 +77,14 @@ public:
         else
             insertInterval(root, newInterval);
         reCalculateMax(newInterval, newInterval->right);
+    }
+
+    Interval *search(int l, int r) {
+        if (!root)
+            return nullptr;
+        else {
+            return searchInterval(root, l, r);
+        }
     }
 };
 
@@ -75,5 +95,12 @@ int main() {
     intervalTree.insert(4, 6);
     intervalTree.insert(1, 6);
     intervalTree.insert(2, 40);
+
+    Interval* interval = intervalTree.search(3, 9);
+
+    if(interval)
+        cout << interval->left << ' ' << interval->right << endl;
+    else
+        cout << "NOT FOUND" << endl;
     return 0;
 }
